@@ -1,6 +1,6 @@
 const express = require('express')
 const cors = require("cors")
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app = express()
 const port = 3000
 
@@ -39,6 +39,17 @@ app.get('/movies',async(req,res)=>{
  res.send(result)
 })
 
+app.get('/movies/:id',async(req,res)=>{
+    const {id} = req.params;
+    console.log(id)
+    const objectId = new ObjectId(id)
+    const result = await movieCollection.findOne({_id:objectId})
+    res.send({
+        success:true,
+        result
+    })
+})
+
 //post method
 // insertMany
 // insertOne
@@ -46,9 +57,10 @@ app.get('/movies',async(req,res)=>{
 app.post("/movies",async(req,res)=>{
     const data = req.body;
     console.log(data)
-//    const result = await movieCollection.insertOne() 
+   const result = await movieCollection.insertOne(data) 
 res.send({
-    success:true
+    success:true,
+    result
 })
 })
 
