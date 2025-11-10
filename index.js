@@ -38,6 +38,20 @@ app.get('/movies',async(req,res)=>{
  const result = await  movieCollection.find().toArray()
  res.send(result)
 })
+
+//post method
+// insertMany
+// insertOne
+
+app.post("/movies",async(req,res)=>{
+    const data = req.body;
+    console.log(data)
+//    const result = await movieCollection.insertOne() 
+res.send({
+    success:true
+})
+})
+
       
         await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
