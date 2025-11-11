@@ -64,6 +64,47 @@ res.send({
 })
 })
 
+// 🧠 Update movie by ID
+app.put("/movies/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const updatedMovie = req.body;
+
+    const result = await movieCollection.updateOne(
+      { _id: new ObjectId(id) },
+      { $set: updatedMovie }
+    );
+
+    if (result.modifiedCount > 0) {
+      res.send({ success: true, message: "Movie updated successfully!" });
+    } else {
+      res
+        .status(404)
+        .send({ success: false, message: "No movie found to update." });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ success: false, message: "Server error!" });
+  }
+});
+
+app.delete("/movies/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const result = await movieCollection.deleteOne({ _id: new ObjectId(id) });
+
+    if (result.deletedCount > 0) {
+      res.send({ success: true, message: "Movie deleted successfully!" });
+    } else {
+      res.status(404).send({ success: false, message: "No movie found to delete." });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ success: false, message: "Server error!" });
+  }
+});
+
+
       
         await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
