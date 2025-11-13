@@ -56,7 +56,7 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
-    // await client.connect();
+    await client.connect();
     const db = client.db('movie-master-db')
     const movieCollection = db.collection('movies')
   
@@ -136,15 +136,71 @@ app.get('/movies', async (req, res) => {
     // insertMany
     // insertOne
 
+    // app.post("/movies", async (req, res) => {
+    //   const data = req.body;
+    //   console.log(data)
+    //   const result = await movieCollection.insertOne(data)
+    //   res.send({
+    //     success: true,
+    //     result
+    //   })
+    // })
     app.post("/movies", async (req, res) => {
-      const data = req.body;
-      console.log(data)
-      const result = await movieCollection.insertOne(data)
-      res.send({
-        success: true,
-        result
-      })
-    })
+  const data = req.body;
+
+  if (!data.addedBy) {
+    return res.status(400).send({ message: "Email is required" });
+  }
+
+  const result = await movieCollection.insertOne(data);
+  res.send({ success: true, 
+    result
+   });
+});
+
+// app.get("/my-collections/:email", async (req, res) => {
+//   const email = req.params.email;
+
+//   if (!email) {
+//     return res.status(400).send({ message: "Email is required" });
+//   }
+
+//   const query = { addedBy: email };
+//   const result = await movieCollection.find(query).toArray();
+//   res.send(result);
+// });
+
+app.get("/my-collections", async (req, res) => {
+  const email = req.query.email; // query parameter
+
+  if (!email) {
+    return res.status(400).send({ message: "Email is required" });
+  }
+
+  const query = { addedBy: email }; // database field যেটা use করছেন
+  const result = await movieCollection.find(query).toArray();
+  res.send(result);
+});
+
+
+
+
+app.get("/movies/:email", async (req, res) => {
+  const email = req.params.email;
+
+  if (!email) {
+    return res.status(400).send({ message: "Email required" });
+  }
+
+  const query = { addedBy: email }; 
+  const result = await movieCollection.find(query).toArray();
+  res.send(result);
+});
+
+// 
+
+
+
 
     //  Update movie by ID
     app.put("/movies/:id", async (req, res) => {
@@ -188,7 +244,7 @@ app.get('/movies', async (req, res) => {
 
 
 
-    // await client.db("admin").command({ ping: 1 });
+    await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
